@@ -42,7 +42,7 @@ function tweetMessage(msg) {
 }
 
 //set interval to tweet every 3 hours
-setInterval(sendTweet, 1000*60*60*3);
+setInterval(sendTweet, 1000*60*60*12);
 
 
 //sends tweet to remind people to get money
@@ -55,7 +55,7 @@ function sendTweet() {
 				"immense", "huge", "a generous amount of", "a enormous amount of",
 				"jumbo", "monumental", "mountainous", "bulky", "thicc", "a decent amount of",
 				"a humble amount of", "oodles of", "loads of", "gobs of", "tons of",
-				"acres of", "a galore", "plenty of", "an appreciable amount of",
+				"acres of", "a galore of", "plenty of", "an appreciable amount of",
 				"a great amount of", "a plethora of", "a good deal of", 
 				"a large volume of", "heavy", "obese", "big", "fat", 
 				"a hefty amount of", "a large amount of", "a massive amount of",
