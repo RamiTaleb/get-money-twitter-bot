@@ -11,6 +11,82 @@ var stream = T.stream('user');
 
 stream.on('tweet', tweetEvent);
 
+var followOnTweet = function(){
+	var params = {
+      q: 'getting money',
+      result_type: 'recent',
+      lang: 'en'
+    }
+ 
+	T.get('search/tweets', params, function (err, reply) {
+		if(err) return callback(err);
+
+		var tweets = reply.statuses;
+		var rTweet = ranDom(tweets)
+		if(typeof rTweet != 'undefined') {
+			var target = rTweet.user.id_str;
+
+			T.post('friendships/create', { id: target }, function(err, response){
+		        // if there was an error while 'favorite'
+		        if(err){
+		          console.log('CANNOT BE FOLLOWED... Error');
+		        }
+		        else{
+		          console.log('FOLLOWED... Success!!!');
+		        }
+		      });
+		}
+	});
+}
+
+// follow as soon as program is running...
+followOnTweet();
+// follow a user in every 5 minutes
+setInterval(followOnTweet, 1000*60*5);
+
+//favorite tweets that include "getting money"
+var favoriteTweet = function(){
+  var params = {
+      q: 'getting money',
+      result_type: 'recent',
+      lang: 'en'
+  }
+
+  // find the tweet
+  T.get('search/tweets', params, function(err,data){
+
+    // find tweets
+    var tweet = data.statuses;
+    var randomTweet = ranDom(tweet);   // pick a random tweet
+
+    // if random tweet exists
+    if(typeof randomTweet != 'undefined'){
+      // Tell TWITTER to 'favorite'
+      T.post('favorites/create', {id: randomTweet.id_str}, function(err, response){
+        // if there was an error while 'favorite'
+        if(err){
+          console.log('CANNOT BE FAVORITE... Error');
+        }
+        else{
+          console.log('FAVORITED... Success!!!');
+        }
+      });
+    }
+  });
+}
+// grab & favorite as soon as program is running...
+favoriteTweet();
+// favorite a tweet in every 5 minutes
+setInterval(favoriteTweet, 1000*60*5);
+
+// function to generate a random tweet tweet
+function ranDom (arr) {
+  var index = Math.floor(Math.random()*arr.length);
+  return arr[index];
+};
+
+
+//reply to people who @ you
 function tweetEvent(msg) {
 	var replyto = msg.in_reply_to_screen_name;
 	var text = msg.text;
@@ -23,7 +99,7 @@ function tweetEvent(msg) {
 	}
 }
 
-//anytime somoene follows the bot
+//anytime someone follows the bot
 stream.on('follow', followed);
 
 function followed(data) {
@@ -41,7 +117,7 @@ function tweetMessage(msg) {
 	T.post('statuses/update', tweet, tweeted);
 }
 
-//set interval to tweet every 3 hours
+//set interval to tweet every 12 hours
 setInterval(sendTweet, 1000*60*60*12);
 
 
@@ -62,14 +138,10 @@ function sendTweet() {
 				"an overweight amount of", "a cumbersome amount of"];
 
 	var r = Math.floor(Math.random()*size.length);
-
-
 	var tweet = {
 		status: 'we getting ' + size[r] + ' money'
 	}
-
 	console.log(tweet);
-
 	T.post('statuses/update', tweet, tweeted);
 }
 
