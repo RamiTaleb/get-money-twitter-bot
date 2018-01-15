@@ -118,7 +118,7 @@ function tweetMessage(msg) {
 }
 
 //set interval to tweet every 12 hours
-setInterval(sendTweet, 1000*60*60*12);
+setInterval(sendTweet, 1000*60*60*24);
 
 
 //sends tweet to remind people to get money
