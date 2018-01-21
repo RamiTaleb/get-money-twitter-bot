@@ -2,22 +2,66 @@ console.log("The bot is starting...");
 
 var Twit = require('twit');
 
+//loads keys from config file
 var config = require('./config');
 var T = new Twit(config);
-
 
 //setting up a user stream
 var stream = T.stream('user');
 
 stream.on('tweet', tweetEvent);
 
-var followOnTweet = function(){
+//this function gets the list of followers and list of followings
+//and compares them to see which users you follow yet they do 
+//not follow you back and then unfollows them
+var unfollowNonFollowers = function () {
+	//get followings
+	T.get('friends/ids', function (err, followings) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+		
+		//get followers
+		T.get('followers/ids', function (err, followers) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+
+			//iterate through followings and see if they are in the followers list
+			//unfollow if not
+			for (var i = 0; i < followings.ids.length; ++i) {
+				if (!followers.ids.includes(followings.ids[i])) {
+					T.post('friendships/destroy', {id: followings.ids[i]}, function (err, response) {
+						if(err) {
+				          console.log('Error: User could not be unfollowed');
+				        }
+				        else {
+				          console.log('Success: User has been unfollowed');
+				        }
+					})
+				}
+			}
+		});
+	
+	});
+}
+
+//call function to unfollow users that do not follow you back
+unfollowNonFollowers();
+// follow a user in every 3 days
+setInterval(unfollowNonFollowers, 1000*60*60*24*3);
+
+//auto follow users
+var followOnTweet = function() {
 	var params = {
       q: 'getting money',
       result_type: 'recent',
       lang: 'en'
     }
- 
+
+    //search tweets given parameters
 	T.get('search/tweets', params, function (err, reply) {
 		if(err) return callback(err);
 
@@ -26,13 +70,13 @@ var followOnTweet = function(){
 		if(typeof rTweet != 'undefined') {
 			var target = rTweet.user.id_str;
 
-			T.post('friendships/create', { id: target }, function(err, response){
+			T.post('friendships/create', { id: target }, function(err, response) {
 		        // if there was an error while 'favorite'
 		        if(err){
-		          console.log('CANNOT BE FOLLOWED... Error');
+		          console.log('Error: User could not be followed');
 		        }
 		        else{
-		          console.log('FOLLOWED... Success!!!');
+		          console.log('Success: User has been followed');
 		        }
 		      });
 		}
@@ -45,7 +89,7 @@ followOnTweet();
 setInterval(followOnTweet, 1000*60*5);
 
 //favorite tweets that include "getting money"
-var favoriteTweet = function(){
+var favoriteTweet = function() {
   var params = {
       q: 'getting money',
       result_type: 'recent',
@@ -53,22 +97,20 @@ var favoriteTweet = function(){
   }
 
   // find the tweet
-  T.get('search/tweets', params, function(err,data){
+  T.get('search/tweets', params, function(err,data) {
 
     // find tweets
     var tweet = data.statuses;
     var randomTweet = ranDom(tweet);   // pick a random tweet
 
     // if random tweet exists
-    if(typeof randomTweet != 'undefined'){
-      // Tell TWITTER to 'favorite'
-      T.post('favorites/create', {id: randomTweet.id_str}, function(err, response){
-        // if there was an error while 'favorite'
+    if(typeof randomTweet != 'undefined') {
+      T.post('favorites/create', {id: randomTweet.id_str}, function(err, response) {
         if(err){
-          console.log('CANNOT BE FAVORITE... Error');
+          console.log('Error: Tweet could not be favorited');
         }
         else{
-          console.log('FAVORITED... Success!!!');
+          console.log('Success: Tweet has been favorited');
         }
       });
     }
@@ -147,8 +189,8 @@ function sendTweet() {
 
 function tweeted(err, data, response) {
 	  if (err) {
-	  	console.log("Something went wrong!")
+	  	console.log("Error: Message not tweeted")
 	  } else {
-	  	console.log("It worked!");
+	  	console.log("Success: Message has been tweeted");
 	  }
 	}
