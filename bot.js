@@ -176,7 +176,7 @@ function sendTweet() {
 					"a goofy amount of", "an illogical amount of", "a laughable amount of", 
 					"a ludricous amount of", "an insane amount of", "a nonsensical amount of", 
 					"a preposterous amount of", "a silly amount of", "a wacky amount of",
-					"hella", "lots", "stupid", "a gigantic amount of", "a sizable amount of",
+					"hella", "lots of", "stupid", "a gigantic amount of", "a sizable amount of",
 					"immense", "huge", "a generous amount of", "a enormous amount of",
 					"jumbo", "monumental", "mountainous", "bulky", "thicc", "a decent amount of",
 					"a humble amount of", "oodles of", "loads of", "gobs of", "tons of",
